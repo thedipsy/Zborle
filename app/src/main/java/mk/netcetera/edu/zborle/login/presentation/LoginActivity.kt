@@ -1,12 +1,31 @@
 package mk.netcetera.edu.zborle.login.presentation
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.Surface
+import mk.netcetera.edu.zborle.register.presentation.RegisterActivity
+import mk.netcetera.edu.zborle.ui.theme.ZborleTheme
 
 class LoginActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    setContent {
+      ZborleTheme {
+        Surface {
+          LoginScreen(
+            onRegisterClick = ::onRegisterClick
+          )
+        }
+      }
+    }
   }
+
+  private fun onRegisterClick() =
+    Intent(this, RegisterActivity::class.java)
+    .apply { startActivity(this) }
 
 }

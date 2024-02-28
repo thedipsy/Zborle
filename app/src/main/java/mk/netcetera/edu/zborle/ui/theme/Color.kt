@@ -1,11 +1,17 @@
 package mk.netcetera.edu.zborle.ui.theme
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val PrimaryGreen = Color(0xFF5ec16a)
+val SecondaryGreen = Color(0xFFF0FCEE)
+val Black = Color(0xFF000000)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val DarkGreen = Color(0xFF438A4B)
+
+
+@Immutable
+data class ButtonColors(
+  val background: Color = Color.Unspecified,
+  val text: Color = Color.Unspecified
+)
