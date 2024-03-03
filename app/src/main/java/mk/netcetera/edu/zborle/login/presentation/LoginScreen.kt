@@ -1,5 +1,6 @@
 package mk.netcetera.edu.zborle.login.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,17 +20,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import mk.netcetera.edu.zborle.R
 import mk.netcetera.edu.zborle.ui.theme.ZborleTheme
 
+/**
+ * Composable function representing the Login screen.
+ *
+ * @param onUsernameTextChanged Lambda function to be invoked when the username text changes.
+ * @param onPasswordTextChanged Lambda function to be invoked when the password text changes.
+ * @param onLoginClick Lambda function to be invoked when the user clicks the login button.
+ * @param onRegisterClick Lambda function to be invoked when the user clicks the register button.
+ * @param onBack Lambda function to be invoked when the user presses the back button.
+ */
 @Composable
 fun LoginScreen(
+  onUsernameTextChanged: (String) -> Unit,
+  onPasswordTextChanged: (String) -> Unit,
   onLoginClick: () -> Unit,
-  onRegisterClick: () -> Unit
+  onRegisterClick: () -> Unit,
+  onBack: () -> Unit
 ) {
+  BackHandler { onBack() }
+
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -38,25 +52,11 @@ fun LoginScreen(
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center
   ) {
-    Header()
+    LoginHeader()
 
-    UsernameTextField()
-
-    PasswordTextField()
-
-    Button(
-      modifier = Modifier
-        .size(height = 60.dp, width = 200.dp)
-        .padding(top = 12.dp, bottom = 6.dp),
-      colors = ButtonDefaults.buttonColors(containerColor = ZborleTheme.buttonColors.background),
-      onClick = onLoginClick
-    ) {
-      Text(
-        text = stringResource(id = R.string.login),
-        color = ZborleTheme.buttonColors.text,
-        fontSize = 18.sp
-      )
-    }
+    UsernameTextField(onUsernameTextChanged = onUsernameTextChanged)
+    PasswordTextField(onPasswordTextChanged = onPasswordTextChanged)
+    LoginButton(onLoginClick = onLoginClick)
 
     Text(
       modifier = Modifier
@@ -70,7 +70,7 @@ fun LoginScreen(
 }
 
 @Composable
-fun Header() {
+private fun LoginHeader() {
   Icon(
     modifier = Modifier
       .size(128.dp)
@@ -88,11 +88,11 @@ fun Header() {
 }
 
 @Composable
-fun UsernameTextField() {
+private fun UsernameTextField(onUsernameTextChanged: (String) -> Unit) {
   OutlinedTextField(
     modifier = Modifier.padding(horizontal = 32.dp, vertical = 6.dp),
     value = "",
-    onValueChange = { /*TODO*/ },
+    onValueChange = onUsernameTextChanged,
     label = { Text(stringResource(id = R.string.username)) },
     leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
     shape = RoundedCornerShape(12.dp),
@@ -102,7 +102,7 @@ fun UsernameTextField() {
 
 
 @Composable
-fun PasswordTextField() {
+private fun PasswordTextField(onPasswordTextChanged: (String) -> Unit) {
   var passwordVisibilityIcon by remember { mutableStateOf(R.drawable.visibility_on) }
   var passwordVisualTransformation: VisualTransformation by remember {
     mutableStateOf(PasswordVisualTransformation())
@@ -111,7 +111,7 @@ fun PasswordTextField() {
   OutlinedTextField(
     modifier = Modifier.padding(horizontal = 32.dp, vertical = 6.dp),
     value = "",
-    onValueChange = { /*TODO*/ },
+    onValueChange = onPasswordTextChanged,
     label = { Text(stringResource(id = R.string.lozinka)) },
     leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
     trailingIcon = {
@@ -135,10 +135,19 @@ fun PasswordTextField() {
   )
 }
 
-@Preview
+
 @Composable
-fun LoginPreview() {
-  ZborleTheme {
-    LoginScreen({}, {})
+private fun LoginButton(onLoginClick: () -> Unit) =
+  Button(
+    modifier = Modifier
+      .size(height = 60.dp, width = 200.dp)
+      .padding(top = 12.dp, bottom = 6.dp),
+    colors = ButtonDefaults.buttonColors(containerColor = ZborleTheme.buttonColors.background),
+    onClick = onLoginClick
+  ) {
+    Text(
+      text = stringResource(id = R.string.login),
+      color = ZborleTheme.buttonColors.text,
+      fontSize = 18.sp
+    )
   }
-}
