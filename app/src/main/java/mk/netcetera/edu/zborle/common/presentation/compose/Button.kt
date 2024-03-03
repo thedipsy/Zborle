@@ -1,6 +1,7 @@
-package mk.netcetera.edu.zborle.compose
+package mk.netcetera.edu.zborle.common.presentation.compose
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
@@ -13,12 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import mk.netcetera.edu.zborle.ui.theme.ZborleTheme
 
 @Composable
-fun Button(
+fun PrimaryButton(
   @StringRes textId: Int,
   isLoading: Boolean,
   onClick: () -> Unit
@@ -45,3 +47,15 @@ fun Button(
     )
   }
 }
+
+
+@Composable
+fun SecondaryButton(@StringRes textId: Int, onClick: () -> Unit) =
+  Text(
+    modifier = Modifier
+      .padding(vertical = 6.dp)
+      .clickable { onClick() },
+    text = stringResource(id = textId),
+    fontSize = 14.sp,
+    textDecoration = TextDecoration.Underline
+  )

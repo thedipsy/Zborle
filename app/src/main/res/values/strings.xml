@@ -5,10 +5,11 @@
   <string name="hello_first_fragment">Hello first fragment</string>
   <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
   <string name="zborle_title">Зборле</string>
-  <string name="username">Корисничко име</string>
+  <string name="email">Е-маил адреса</string>
   <string name="login">Најави се</string>
   <string name="register">Регистрирај се</string>
-  <string name="lozinka">Лозинка</string>
+  <string name="password">Лозинка</string>
+  <string name="confirm_password">Потврди лозинка</string>
   <string name="surname">Презиме</string>
   <string name="name">Име</string>
   <string name="descriptionTitle">Погодете го ЗБОРЛЕ во 6 обиди.</string>
@@ -17,4 +18,5 @@
   <string name="examples">Примери</string>
   <string name="how_to_play">Како се игра</string>
   <string name="mandatory_field">Полето е задолжително.</string>
+  <string name="password_do_not_match">Лозинките не се совпаѓаат.</string>
 </resources>

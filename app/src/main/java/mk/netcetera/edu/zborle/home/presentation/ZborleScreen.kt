@@ -21,8 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import mk.netcetera.edu.zborle.R
-import mk.netcetera.edu.zborle.compose.MacedonianKeyboard
-import mk.netcetera.edu.zborle.compose.ZborleWord
+import mk.netcetera.edu.zborle.common.presentation.compose.MacedonianKeyboard
+import mk.netcetera.edu.zborle.common.presentation.compose.ZborleWord
+import mk.netcetera.edu.zborle.home.presentation.compose.HowToPlayDialog
 
 @Composable
 fun ZborleScreen() {

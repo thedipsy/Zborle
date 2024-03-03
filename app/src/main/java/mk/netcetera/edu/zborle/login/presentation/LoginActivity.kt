@@ -28,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
         Surface {
           LoginScreen(
             viewState = viewModel.viewState.collectAsState().value,
-            onUsernameTextChanged = viewModel::onUsernameTextChanged,
+            onEmailTextChanged = viewModel::onEmailTextChanged,
             onPasswordTextChanged = viewModel::onPasswordTextChanged,
             onLoginClick = viewModel::onLoginClicked,
             onRegisterClick = viewModel::onRegisterClicked,

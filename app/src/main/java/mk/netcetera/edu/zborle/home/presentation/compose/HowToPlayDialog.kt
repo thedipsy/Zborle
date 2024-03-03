@@ -1,4 +1,4 @@
-package mk.netcetera.edu.zborle.home.presentation
+package mk.netcetera.edu.zborle.home.presentation.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

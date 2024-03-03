@@ -8,27 +8,29 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mk.netcetera.edu.zborle.R
+import mk.netcetera.edu.zborle.common.presentation.TextField
 
 /**
  * ViewModel responsible for handling login-related logic.
  */
 class LoginViewModel : ViewModel() {
 
+  /** Exposes view state. */
   private val _viewState = MutableStateFlow(initialViewState())
   val viewState: StateFlow<LoginViewState>
     get() = _viewState
 
-  /** Exposes navigation events **/
+  /** Exposes navigation events. **/
   private val _navigationEvent: MutableSharedFlow<LoginEvent> =
     MutableSharedFlow(extraBufferCapacity = 1)
   val navigationEvent: Flow<LoginEvent>
     get() = _navigationEvent
 
   /**
-   * Invoked when the user makes changes in the username.
+   * Invoked when the user makes changes in the email.
    */
-  fun onUsernameTextChanged(text: String) =
-    _viewState.update { it.copy(username = it.username.copy(text = text, errorMessageId = null)) }
+  fun onEmailTextChanged(text: String) =
+    _viewState.update { it.copy(email = it.email.copy(text = text, errorMessageId = null)) }
 
   /**
    * Invoked when the user makes changes in the password.
@@ -63,11 +65,11 @@ class LoginViewModel : ViewModel() {
   }
 
   private fun isDataValid() =
-    _viewState.value.username.errorMessageId == null && _viewState.value.password.errorMessageId == null
+    _viewState.value.email.errorMessageId == null && _viewState.value.password.errorMessageId == null
 
   private fun frontendValidation() {
-    if (_viewState.value.username.text.isEmpty()) {
-      _viewState.update { it.copy(username = it.username.copy(errorMessageId = R.string.mandatory_field)) }
+    if (_viewState.value.email.text.isEmpty()) {
+      _viewState.update { it.copy(email = it.email.copy(errorMessageId = R.string.mandatory_field)) }
     }
     if (_viewState.value.password.text.isEmpty()) {
       _viewState.update { it.copy(password = it.password.copy(errorMessageId = R.string.mandatory_field)) }
@@ -75,7 +77,7 @@ class LoginViewModel : ViewModel() {
   }
 
   private fun initialViewState() = LoginViewState(
-    username = TextField(""),
+    email = TextField(""),
     password = TextField(""),
     isLoading = false,
     errorMessage = null
