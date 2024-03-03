@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
   private fun onLoginClick() =
     Intent(this, ZborleActivity::class.java)
       .apply { startActivity(this) }
-
+      .also { finish() }
 
   private fun onRegisterClick() =
     Intent(this, RegisterActivity::class.java)

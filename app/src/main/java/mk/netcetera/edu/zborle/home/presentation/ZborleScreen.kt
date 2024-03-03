@@ -96,7 +96,7 @@ private fun ZborleInputs() {
   Column(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(16.dp),
+      .padding(24.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.SpaceAround
   ) {

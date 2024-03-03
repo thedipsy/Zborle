@@ -17,7 +17,8 @@ class RegisterActivity : AppCompatActivity() {
       ZborleTheme {
         Surface {
           RegisterScreen(
-            onLoginClick = ::onLoginClick
+            onLoginClick = ::onLoginClick,
+            onBack = ::finish
           )
         }
       }
@@ -26,6 +27,11 @@ class RegisterActivity : AppCompatActivity() {
 
   private fun onLoginClick() =
     Intent(this, LoginActivity::class.java)
-      .apply { startActivity(this) }
+      .apply {
+        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+
+        startActivity(this) }
+      .also { finish() }
 
 }

@@ -1,5 +1,6 @@
 package mk.netcetera.edu.zborle.register.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -23,7 +24,11 @@ import mk.netcetera.edu.zborle.R
 import mk.netcetera.edu.zborle.ui.theme.ZborleTheme
 
 @Composable
-fun RegisterScreen(onLoginClick: () -> Unit) {
+fun RegisterScreen(onLoginClick: () -> Unit, onBack: () -> Unit) {
+  BackHandler {
+    onBack()
+  }
+
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -149,12 +154,4 @@ fun PasswordTextField() {
     singleLine = true,
     visualTransformation = passwordVisualTransformation
   )
-}
-
-@Preview
-@Composable
-fun RegisterPreview() {
-  ZborleTheme {
-    RegisterScreen { }
-  }
 }
