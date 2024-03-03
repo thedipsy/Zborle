@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import mk.netcetera.edu.zborle.utils.collectLatest
 import mk.netcetera.edu.zborle.home.presentation.ZborleActivity
 import mk.netcetera.edu.zborle.register.presentation.RegisterActivity
@@ -26,8 +27,9 @@ class LoginActivity : AppCompatActivity() {
       ZborleTheme {
         Surface {
           LoginScreen(
-            onUsernameTextChanged = {},
-            onPasswordTextChanged = {},
+            viewState = viewModel.viewState.collectAsState().value,
+            onUsernameTextChanged = viewModel::onUsernameTextChanged,
+            onPasswordTextChanged = viewModel::onPasswordTextChanged,
             onLoginClick = viewModel::onLoginClicked,
             onRegisterClick = viewModel::onRegisterClicked,
             onBack = ::finish

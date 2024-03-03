@@ -16,4 +16,5 @@
   <string name="descriptionTwo">По секој обид, бојата на квадратите ќе се менува да ви покаже колку вашиот обид е блиску до бараниот збор.</string>
   <string name="examples">Примери</string>
   <string name="how_to_play">Како се игра</string>
+  <string name="mandatory_field">Полето е задолжително.</string>
 </resources>

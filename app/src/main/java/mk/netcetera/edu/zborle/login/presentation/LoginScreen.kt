@@ -9,7 +9,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +26,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import mk.netcetera.edu.zborle.R
-import mk.netcetera.edu.zborle.ui.theme.ZborleTheme
+import mk.netcetera.edu.zborle.compose.Button
 
 /**
  * Composable function representing the Login screen.
@@ -36,6 +39,7 @@ import mk.netcetera.edu.zborle.ui.theme.ZborleTheme
  */
 @Composable
 fun LoginScreen(
+  viewState: LoginViewState,
   onUsernameTextChanged: (String) -> Unit,
   onPasswordTextChanged: (String) -> Unit,
   onLoginClick: () -> Unit,
@@ -54,9 +58,21 @@ fun LoginScreen(
   ) {
     LoginHeader()
 
-    UsernameTextField(onUsernameTextChanged = onUsernameTextChanged)
-    PasswordTextField(onPasswordTextChanged = onPasswordTextChanged)
-    LoginButton(onLoginClick = onLoginClick)
+    UsernameTextField(
+      usernameTextField = viewState.username,
+      enabled = !viewState.isLoading,
+      onUsernameTextChanged = onUsernameTextChanged
+    )
+    PasswordTextField(
+      passwordTextField = viewState.password,
+      enabled = !viewState.isLoading,
+      onPasswordTextChanged = onPasswordTextChanged
+    )
+    Button(
+      textId = R.string.login,
+      isLoading = viewState.isLoading,
+      onClick = onLoginClick
+    )
 
     Text(
       modifier = Modifier
@@ -88,21 +104,39 @@ private fun LoginHeader() {
 }
 
 @Composable
-private fun UsernameTextField(onUsernameTextChanged: (String) -> Unit) {
+private fun UsernameTextField(
+  usernameTextField: TextField,
+  enabled: Boolean,
+  onUsernameTextChanged: (String) -> Unit
+) {
   OutlinedTextField(
     modifier = Modifier.padding(horizontal = 32.dp, vertical = 6.dp),
-    value = "",
+    value = usernameTextField.text,
     onValueChange = onUsernameTextChanged,
     label = { Text(stringResource(id = R.string.username)) },
     leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
     shape = RoundedCornerShape(12.dp),
-    singleLine = true
+    singleLine = true,
+    enabled = enabled,
+    supportingText = {
+      usernameTextField.errorMessageId?.let { errorMessageId ->
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = stringResource(id = errorMessageId),
+          color = MaterialTheme.colorScheme.error
+        )
+      }
+    }
   )
 }
 
 
 @Composable
-private fun PasswordTextField(onPasswordTextChanged: (String) -> Unit) {
+private fun PasswordTextField(
+  passwordTextField: TextField,
+  enabled: Boolean,
+  onPasswordTextChanged: (String) -> Unit
+) {
   var passwordVisibilityIcon by remember { mutableStateOf(R.drawable.visibility_on) }
   var passwordVisualTransformation: VisualTransformation by remember {
     mutableStateOf(PasswordVisualTransformation())
@@ -110,7 +144,7 @@ private fun PasswordTextField(onPasswordTextChanged: (String) -> Unit) {
 
   OutlinedTextField(
     modifier = Modifier.padding(horizontal = 32.dp, vertical = 6.dp),
-    value = "",
+    value = passwordTextField.text,
     onValueChange = onPasswordTextChanged,
     label = { Text(stringResource(id = R.string.lozinka)) },
     leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
@@ -131,23 +165,16 @@ private fun PasswordTextField(onPasswordTextChanged: (String) -> Unit) {
     },
     shape = RoundedCornerShape(12.dp),
     singleLine = true,
-    visualTransformation = passwordVisualTransformation
+    visualTransformation = passwordVisualTransformation,
+    enabled = enabled,
+    supportingText = {
+      passwordTextField.errorMessageId?.let { errorMessageId ->
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = stringResource(id = errorMessageId),
+          color = MaterialTheme.colorScheme.error
+        )
+      }
+    }
   )
 }
-
-
-@Composable
-private fun LoginButton(onLoginClick: () -> Unit) =
-  Button(
-    modifier = Modifier
-      .size(height = 60.dp, width = 200.dp)
-      .padding(top = 12.dp, bottom = 6.dp),
-    colors = ButtonDefaults.buttonColors(containerColor = ZborleTheme.buttonColors.background),
-    onClick = onLoginClick
-  ) {
-    Text(
-      text = stringResource(id = R.string.login),
-      color = ZborleTheme.buttonColors.text,
-      fontSize = 18.sp
-    )
-  }
