@@ -11,4 +11,9 @@
   <string name="lozinka">Лозинка</string>
   <string name="surname">Презиме</string>
   <string name="name">Име</string>
+  <string name="descriptionTitle">Погодете го ЗБОРЛЕ во 6 обиди.</string>
+  <string name="descriptionOne">Секој обид мора да биде валиден збор од 5 букви. Притиснете го копчето ENTER да направите обид.</string>
+  <string name="descriptionTwo">По секој обид, бојата на квадратите ќе се менува да ви покаже колку вашиот обид е блиску до бараниот збор.</string>
+  <string name="examples">Примери</string>
+  <string name="how_to_play">Како се игра</string>
 </resources>

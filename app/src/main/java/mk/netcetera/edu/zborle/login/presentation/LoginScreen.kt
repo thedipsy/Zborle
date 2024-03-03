@@ -26,7 +26,10 @@ import mk.netcetera.edu.zborle.R
 import mk.netcetera.edu.zborle.ui.theme.ZborleTheme
 
 @Composable
-fun LoginScreen(onRegisterClick: () -> Unit) {
+fun LoginScreen(
+  onLoginClick: () -> Unit,
+  onRegisterClick: () -> Unit
+) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -46,7 +49,8 @@ fun LoginScreen(onRegisterClick: () -> Unit) {
         .size(height = 60.dp, width = 200.dp)
         .padding(top = 12.dp, bottom = 6.dp),
       colors = ButtonDefaults.buttonColors(containerColor = ZborleTheme.buttonColors.background),
-      onClick = { /*TODO*/ }) {
+      onClick = onLoginClick
+    ) {
       Text(
         text = stringResource(id = R.string.login),
         color = ZborleTheme.buttonColors.text,
@@ -135,6 +139,6 @@ fun PasswordTextField() {
 @Composable
 fun LoginPreview() {
   ZborleTheme {
-    LoginScreen { }
+    LoginScreen({}, {})
   }
 }
