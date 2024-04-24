@@ -29,7 +29,7 @@ fun OutlinedTextField(
   leadingIcon: (@Composable () -> Unit)? = null,
   onTextChanged: (String) -> Unit,
 ) = OutlinedTextField(
-  modifier = Modifier.padding(horizontal = 32.dp, vertical = 6.dp),
+  modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp),
   value = textField.text,
   onValueChange = onTextChanged,
   label = { Text(stringResource(id = labelId)) },
@@ -60,7 +60,7 @@ fun OutlinedPasswordTextField(
   }
 
   OutlinedTextField(
-    modifier = Modifier.padding(horizontal = 32.dp, vertical = 6.dp),
+    modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp),
     value = passwordTextField.text,
     onValueChange = onPasswordTextChanged,
     label = { Text(stringResource(id = labelId)) },

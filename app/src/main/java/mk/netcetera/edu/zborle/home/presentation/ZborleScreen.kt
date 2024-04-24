@@ -24,36 +24,54 @@ import mk.netcetera.edu.zborle.R
 import mk.netcetera.edu.zborle.common.presentation.compose.MacedonianKeyboard
 import mk.netcetera.edu.zborle.common.presentation.compose.ZborleWord
 import mk.netcetera.edu.zborle.home.presentation.compose.HowToPlayDialog
+import mk.netcetera.edu.zborle.home.presentation.compose.PlayerStatisticsDialog
 
 @Composable
-fun ZborleScreen() {
+fun ZborleScreen(
+  viewState: ZborleState,
+  onLetterEntered: (String) -> Unit,
+  onEnterClicked: () -> Unit,
+  onBackspaceClicked: () -> Unit
+) {
   Box(
     modifier = Modifier
       .fillMaxSize()
       .verticalScroll(rememberScrollState())
   ) {
-    val showDialog = remember { mutableStateOf(false) }
+    val showHowToPlayDialog = remember { mutableStateOf(false) }
+    val showStatisticsDialog = remember { mutableStateOf(false) }
 
     Column(
       modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.SpaceBetween,
 
       ) {
-      ZborleHeader { showDialog.value = true }
+      ZborleHeader(
+        onHowToIconClick = { showHowToPlayDialog.value = true },
+        onStatisticsIconClick = { showStatisticsDialog.value = true }
+      )
 
-      ZborleInputs()
-      MacedonianKeyboard({}, {}, {})
+      ZborleInputs(viewState.wordAttempts)
+      MacedonianKeyboard(
+        letterInputState = viewState.letterInputState,
+        onEnterClicked = onEnterClicked,
+        onLetterEntered = onLetterEntered,
+        onBackspaceClicked = onBackspaceClicked
+      )
     }
 
-    if (showDialog.value) {
-      HowToPlayDialog { showDialog.value = false }
+    if (showHowToPlayDialog.value) {
+      HowToPlayDialog(viewState.wordExamples) { showHowToPlayDialog.value = false }
+    }
+    if (showStatisticsDialog.value) {
+      PlayerStatisticsDialog { showStatisticsDialog.value = false }
     }
   }
 
 }
 
 @Composable
-private fun ZborleHeader(onHowToIconClick: () -> Unit) =
+private fun ZborleHeader(onHowToIconClick: () -> Unit, onStatisticsIconClick: () -> Unit) =
   Box(
     modifier = Modifier
       .fillMaxWidth()
@@ -85,6 +103,8 @@ private fun ZborleHeader(onHowToIconClick: () -> Unit) =
       modifier = Modifier
         .padding(16.dp)
         .size(28.dp)
+        .clip(RoundedCornerShape(2.dp))
+        .clickable { onStatisticsIconClick() }
         .align(Alignment.CenterEnd),
       painter = painterResource(id = R.drawable.statistics),
       contentDescription = null,
@@ -93,7 +113,7 @@ private fun ZborleHeader(onHowToIconClick: () -> Unit) =
   }
 
 @Composable
-private fun ZborleInputs() {
+private fun ZborleInputs(wordAttempts: WordAttempts) {
   Column(
     modifier = Modifier
       .fillMaxWidth()
@@ -102,7 +122,7 @@ private fun ZborleInputs() {
     verticalArrangement = Arrangement.SpaceAround
   ) {
     repeat(6) {
-      ZborleWord()
+      ZborleWord(wordAttempts[it])
     }
   }
 }

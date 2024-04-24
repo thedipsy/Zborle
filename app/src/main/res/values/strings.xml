@@ -12,11 +12,21 @@
   <string name="confirm_password">Потврди лозинка</string>
   <string name="surname">Презиме</string>
   <string name="name">Име</string>
-  <string name="descriptionTitle">Погодете го ЗБОРЛЕ во 6 обиди.</string>
+  <string name="descriptionTitle">Погодете го &lt;b&gt;ЗБОРЛЕ&lt;/b&gt; во 6 обиди.</string>
   <string name="descriptionOne">Секој обид мора да биде валиден збор од 5 букви. Притиснете го копчето ENTER да направите обид.</string>
   <string name="descriptionTwo">По секој обид, бојата на квадратите ќе се менува да ви покаже колку вашиот обид е блиску до бараниот збор.</string>
   <string name="examples">Примери</string>
   <string name="how_to_play">Како се игра</string>
   <string name="mandatory_field">Полето е задолжително.</string>
   <string name="password_do_not_match">Лозинките не се совпаѓаат.</string>
+  <string name="new_zborle_daily">Нов &lt;b&gt;ЗБОРЛЕ&lt;/b&gt; е достапен секој ден.</string>
+  <string name="correct_position_example">Буквата &lt;b&gt;П&lt;/b&gt; е во зборот и на &lt;b&gt;точна&lt;/b&gt; позиција.</string>
+  <string name="partially_correct_example">Буквата &lt;b&gt;Р&lt;/b&gt; е во зборот, но на &lt;b&gt;погрешна&lt;/b&gt; позиција.</string>
+  <string name="incorrect_example">Буквата &lt;b&gt;К&lt;/b&gt; не е во зборот на ниту една позиција.</string>
+  <string name="statistics">Статистика</string>
+  <string name="guess_statistics_text">РАСПРЕДЕЛБА НА ПОГОДОЦИ</string>
+  <string name="overall_attempts_text">Вкупно обиди</string>
+  <string name="success_rate">Успешност</string>
+  <string name="current_streak">Моментална низа</string>
+  <string name="best_streak">Најдобра низа</string>
 </resources>

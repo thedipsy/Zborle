@@ -1,14 +1,14 @@
 package mk.netcetera.edu.zborle.ui.theme
 
 import android.app.Activity
-
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
@@ -38,7 +38,9 @@ fun ZborleTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
   content: @Composable () -> Unit
 ) {
-  val buttonColors = if(darkTheme) ButtonDarkColorScheme else ButtonLightColorScheme
+  val buttonColors = if (darkTheme) ButtonDarkColorScheme else ButtonLightColorScheme
+  val statusColors =
+    if (darkTheme) StatusColorsDarkColorScheme else StatusColorsLightColorScheme
 
   val colorScheme = when {
     darkTheme -> DarkColorScheme
@@ -52,7 +54,8 @@ fun ZborleTheme(
     }
   }
   CompositionLocalProvider(
-    LocalButtonColors provides buttonColors
+    LocalButtonColors provides buttonColors,
+    LocalStatusColors provides statusColors
   ) {
     MaterialTheme(
       colorScheme = colorScheme,
@@ -63,19 +66,40 @@ fun ZborleTheme(
 }
 
 val ButtonLightColorScheme = ButtonColors(
-  background = Color.Black,
-  text = Color.White
+  background = Black,
+  text = White
 )
 
 val ButtonDarkColorScheme = ButtonColors(
   background = DarkGreen,
-  text = Color.White
+  text = White
+)
+
+val StatusColorsLightColorScheme = StatusColors(
+  correctBackground = LightGreen,
+  partiallyCorrectBackground = Orange,
+  incorrectBackground = Gray,
+  defaultBackground = White,
+  defaultKeyboardBackground = LightGray
+)
+
+val StatusColorsDarkColorScheme = StatusColors(
+  correctBackground = LightGreen,
+  partiallyCorrectBackground = Orange,
+  incorrectBackground = Gray,
+  defaultBackground = White,
+  defaultKeyboardBackground = LightGray
 )
 
 val LocalButtonColors = staticCompositionLocalOf { ButtonColors() }
+val LocalStatusColors = staticCompositionLocalOf { StatusColors() }
 
 object ZborleTheme {
   val buttonColors: ButtonColors
-  @Composable
-  get() = LocalButtonColors.current
+    @Composable
+    get() = LocalButtonColors.current
+
+  val statusColors: StatusColors
+    @Composable
+    get() = LocalStatusColors.current
 }

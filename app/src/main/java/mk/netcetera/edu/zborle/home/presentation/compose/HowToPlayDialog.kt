@@ -1,113 +1,94 @@
 package mk.netcetera.edu.zborle.home.presentation.compose
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import mk.netcetera.edu.zborle.R
+import mk.netcetera.edu.zborle.common.presentation.compose.ZborleDialog
+import mk.netcetera.edu.zborle.common.presentation.compose.ZborleWord
+import mk.netcetera.edu.zborle.home.presentation.WordAttempts
+import mk.netcetera.edu.zborle.home.presentation.WordState
+import mk.netcetera.edu.zborle.ui.theme.Gray
+import mk.netcetera.edu.zborle.utils.parseBold
 
 @Composable
 fun HowToPlayDialog(
+  wordExamples: WordAttempts,
   onDismissRequest: () -> Unit
-) {
-  Dialog(onDismissRequest = { onDismissRequest() }) {
-    Card(
-      modifier = Modifier
-        .padding(vertical = 16.dp)
-        .fillMaxSize(),
-      shape = RoundedCornerShape(16.dp),
-      colors = CardDefaults.cardColors().copy(containerColor = Color.White)
-    ) {
-      Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-      ) {
+) = ZborleDialog(
+    titleId = R.string.how_to_play,
+    onDismissRequest = { onDismissRequest() },
+  ) {
+    HowToPlayDescription()
+    Spacer(modifier = Modifier.size(8.dp))
 
-        HowToPlayDialogHeader(onDismissRequest)
+    HowToPlayExample(wordExamples)
+    Spacer(modifier = Modifier.size(8.dp))
 
-        HowToPlayDescription()
-
-        HowToPlayExample()
-      }
-    }
+    DescriptionText(textId = R.string.new_zborle_daily)
   }
-}
 
 @Composable
-fun HowToPlayExample() {
+private fun HowToPlayExample(wordExamples: WordAttempts) {
+  HorizontalDivider()
   Text(
-    modifier = Modifier.fillMaxSize(),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(vertical = 8.dp),
     text = stringResource(id = R.string.examples),
     fontWeight = FontWeight.Bold,
     fontSize = 16.sp,
     textAlign = TextAlign.Center
   )
-}
 
-@Composable
-fun HowToPlayDescription() {
-  Text(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp, vertical = 4.dp),
-    text = stringResource(id = R.string.descriptionTitle),
-    fontSize = 16.sp,
-    color = Color.Gray
-  )
-  Text(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp, vertical = 4.dp),
-    text = stringResource(id = R.string.descriptionOne),
-    fontSize = 16.sp,
-    color = Color.Gray
-  )
-  Text(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp, vertical = 4.dp),
-    text = stringResource(id = R.string.descriptionTwo),
-    fontSize = 16.sp,
-    color = Color.Gray
-  )
-}
-
-@Composable
-fun HowToPlayDialogHeader(onDismissRequest: () -> Unit) {
-  Box(modifier = Modifier.fillMaxWidth()) {
-
-    Text(
-      modifier = Modifier
-        .padding(16.dp)
-        .align(Alignment.Center),
-      text = stringResource(id = R.string.how_to_play),
-      fontSize = 18.sp,
-      fontWeight = FontWeight.Bold,
-      textAlign = TextAlign.Center
-    )
-
-    Icon(
-      modifier = Modifier
-        .padding(16.dp)
-        .size(24.dp)
-        .align(Alignment.CenterEnd)
-        .clickable { onDismissRequest() },
-      painter = painterResource(id = com.google.android.material.R.drawable.ic_m3_chip_close),
-      contentDescription = null,
-      tint = Color.Unspecified
-    )
+  if (wordExamples.size == 3) {
+    PositionExample(wordExamples[0], R.string.correct_position_example)
+    PositionExample(wordExamples[1], R.string.partially_correct_example)
+    PositionExample(wordExamples[2], R.string.incorrect_example)
   }
-
+  HorizontalDivider()
 }
+
+@Composable
+private fun PositionExample(wordState: WordState, @StringRes textId: Int) {
+  ZborleWord(wordState)
+
+  Text(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(top = 4.dp, bottom = 12.dp),
+    text = stringResource(textId).parseBold(),
+    fontSize = 14.sp,
+    textAlign = TextAlign.Center,
+    color = Gray
+  )
+}
+
+
+@Composable
+private fun HowToPlayDescription() {
+  DescriptionText(textId = R.string.descriptionTitle)
+  DescriptionText(textId = R.string.descriptionOne)
+  DescriptionText(textId = R.string.descriptionTwo)
+}
+
+@Composable
+private fun DescriptionText(@StringRes textId: Int) = Text(
+  modifier = Modifier
+    .fillMaxWidth()
+    .padding(vertical = 4.dp),
+  text = stringResource(id = textId).parseBold(),
+  fontSize = 16.sp,
+  color = Gray
+)
