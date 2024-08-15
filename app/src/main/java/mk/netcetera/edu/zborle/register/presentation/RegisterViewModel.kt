@@ -3,17 +3,20 @@ package mk.netcetera.edu.zborle.register.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mk.netcetera.edu.zborle.R
 import mk.netcetera.edu.zborle.common.presentation.TextField
+import mk.netcetera.edu.zborle.network.service.ApiResponse
+import mk.netcetera.edu.zborle.register.domain.RegisterUserUseCase
 
 /**
  * ViewModel responsible for handling register-related logic.
  */
 class RegisterViewModel : ViewModel() {
+
+  private val registerUser by lazy { RegisterUserUseCase() }
 
   /** Exposes view state. */
   private val _viewState = MutableStateFlow(initialViewState())
@@ -64,7 +67,7 @@ class RegisterViewModel : ViewModel() {
     val confirmPassword = _viewState.value.confirmPassword.text
 
     val errorMessageId = R.string.password_do_not_match
-        .takeIf { password.isNotEmpty() && confirmPassword.isNotEmpty() && password != confirmPassword }
+      .takeIf { password.isNotEmpty() && confirmPassword.isNotEmpty() && password != confirmPassword }
 
     _viewState.update {
       it.copy(confirmPassword = it.confirmPassword.copy(errorMessageId = errorMessageId))
@@ -80,14 +83,25 @@ class RegisterViewModel : ViewModel() {
   /**
    * Invoked when the user clicks on Register button.
    */
-
-
   private suspend fun register() {
-    _viewState.update { it.copy(isLoading = true) }
+    _viewState.update { it.copy(isLoading = true, errorMessage = null) }
     withContext(Dispatchers.IO) {
-      delay(3000)
-      // TODO: register call
-      _navigationEvent.tryEmit(RegisterEvent.OpenZborle)
+      with(_viewState.value) {
+        val outcome = registerUser(
+          firstName = name.text,
+          lastName = surname.text,
+          email = email.text,
+          password = password.text
+        )
+
+        when(outcome) {
+          is ApiResponse.Complete -> _navigationEvent.tryEmit(RegisterEvent.OpenZborle)
+          ApiResponse.Error -> {
+            _viewState.update { it.copy(errorMessage = "Error", isLoading = false) }
+          }
+          ApiResponse.Loading -> { }
+        }
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 package mk.netcetera.edu.zborle.register.presentation
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -7,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import mk.netcetera.edu.zborle.R
 import mk.netcetera.edu.zborle.common.presentation.compose.*
@@ -72,6 +74,13 @@ fun RegisterScreen(
     )
 
     PrimaryButton(textId = R.string.register, isLoading = viewState.isLoading, onRegisterClicked)
-    SecondaryButton(textId = R.string.login, onClick = onLoginClicked)
+    SecondaryButton(textId = R.string.login, onClick = onLoginClicked, isEnabled = !viewState.isLoading)
+  }
+
+  val context = LocalContext.current
+  LaunchedEffect(key1 = viewState.errorMessage) {
+    if(!viewState.errorMessage.isNullOrEmpty()) {
+      Toast.makeText(context, viewState.errorMessage, Toast.LENGTH_SHORT).show()
+    }
   }
 }

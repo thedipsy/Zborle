@@ -17,6 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import mk.netcetera.edu.zborle.ui.theme.Black
+import mk.netcetera.edu.zborle.ui.theme.Gray
 import mk.netcetera.edu.zborle.ui.theme.ZborleTheme
 
 @Composable
@@ -29,7 +31,8 @@ fun PrimaryButton(
     .size(height = 60.dp, width = 200.dp)
     .padding(top = 12.dp, bottom = 6.dp),
   colors = ButtonDefaults.buttonColors(containerColor = ZborleTheme.buttonColors.background),
-  onClick = onClick
+  onClick = onClick,
+  enabled = !isLoading
 ) {
   if (isLoading) {
     CircularProgressIndicator(
@@ -50,12 +53,20 @@ fun PrimaryButton(
 
 
 @Composable
-fun SecondaryButton(@StringRes textId: Int, onClick: () -> Unit) =
+fun SecondaryButton(@StringRes textId: Int, onClick: () -> Unit, isEnabled: Boolean) {
+  val (clickableModifier, textColor) = if (isEnabled) {
+    Modifier.clickable { onClick() } to Black
+  } else {
+    Modifier to Gray
+  }
+
   Text(
     modifier = Modifier
       .padding(vertical = 6.dp)
-      .clickable { onClick() },
+      .then(clickableModifier),
     text = stringResource(id = textId),
     fontSize = 14.sp,
-    textDecoration = TextDecoration.Underline
+    textDecoration = TextDecoration.Underline,
+    color = textColor
   )
+}
