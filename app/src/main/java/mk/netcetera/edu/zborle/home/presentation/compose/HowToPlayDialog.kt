@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -41,7 +41,7 @@ fun HowToPlayDialog(
 
 @Composable
 private fun HowToPlayExample(wordExamples: WordAttempts) {
-  HorizontalDivider()
+  Divider()
   Text(
     modifier = Modifier
       .fillMaxWidth()
@@ -57,7 +57,7 @@ private fun HowToPlayExample(wordExamples: WordAttempts) {
     PositionExample(wordExamples[1], R.string.partially_correct_example)
     PositionExample(wordExamples[2], R.string.incorrect_example)
   }
-  HorizontalDivider()
+  Divider()
 }
 
 @Composable

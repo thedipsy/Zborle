@@ -39,8 +39,7 @@ fun PrimaryButton(
       modifier = Modifier
         .fillMaxHeight()
         .aspectRatio(1f),
-      strokeWidth = 2.dp,
-      strokeCap = StrokeCap.Round
+      strokeWidth = 2.dp
     )
   } else {
     Text(

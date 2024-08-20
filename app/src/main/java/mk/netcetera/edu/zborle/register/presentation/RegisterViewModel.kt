@@ -95,7 +95,9 @@ class RegisterViewModel : ViewModel() {
         )
 
         when(outcome) {
-          is ApiResponse.Complete -> _navigationEvent.tryEmit(RegisterEvent.OpenZborle)
+          is ApiResponse.Complete -> {
+            _navigationEvent.tryEmit(RegisterEvent.OpenZborle)
+          }
           ApiResponse.Error -> {
             _viewState.update { it.copy(errorMessage = "Error", isLoading = false) }
           }

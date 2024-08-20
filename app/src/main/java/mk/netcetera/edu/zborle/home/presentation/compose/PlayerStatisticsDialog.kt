@@ -1,6 +1,5 @@
 package mk.netcetera.edu.zborle.home.presentation.compose
 
-import BarChart
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,9 +50,9 @@ fun PlayerStatisticsDialog(onDismissRequest: () -> Unit) =
       textAlign = TextAlign.Center,
       color = Black
     )
-    BarChart(
-      values = listOf(1, 2, 10, 35, 54, 28)
-    )
+//    BarChart(
+//      values = listOf(1, 2, 10, 35, 54, 28)
+//    )
   }
 
 
