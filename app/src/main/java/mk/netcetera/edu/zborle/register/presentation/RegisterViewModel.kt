@@ -96,7 +96,7 @@ class RegisterViewModel : ViewModel() {
 
         when(outcome) {
           is ApiResponse.Complete -> {
-            _navigationEvent.tryEmit(RegisterEvent.OpenZborle)
+            _navigationEvent.tryEmit(RegisterEvent.OpenZborle(outcome.value.accessToken))
           }
           ApiResponse.Error -> {
             _viewState.update { it.copy(errorMessage = "Error", isLoading = false) }
@@ -160,5 +160,5 @@ sealed interface RegisterEvent {
   /**
    * Represents the event to open the Zborle screen.
    */
-  object OpenZborle : RegisterEvent
+  data class OpenZborle(val token: String) : RegisterEvent
 }

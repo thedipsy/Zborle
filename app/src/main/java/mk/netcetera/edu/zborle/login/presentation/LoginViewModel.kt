@@ -1,5 +1,6 @@
 package mk.netcetera.edu.zborle.login.presentation
 
+import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -9,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mk.netcetera.edu.zborle.R
 import mk.netcetera.edu.zborle.common.presentation.TextField
+import mk.netcetera.edu.zborle.data.TokenManager
 import mk.netcetera.edu.zborle.login.domain.LoginUseCase
 import mk.netcetera.edu.zborle.network.service.ApiResponse
 import mk.netcetera.edu.zborle.register.presentation.RegisterEvent
@@ -77,7 +79,9 @@ class LoginViewModel : ViewModel() {
                 )
 
                 when (outcome) {
-                    is ApiResponse.Complete -> _navigationEvent.tryEmit(LoginEvent.OpenZborle)
+                    is ApiResponse.Complete -> {
+                        _navigationEvent.tryEmit(LoginEvent.OpenZborle(outcome.value.accessToken))
+                    }
                     ApiResponse.Error -> _viewState.update {
                         it.copy(
                             errorMessage = "Error",
@@ -124,5 +128,5 @@ sealed interface LoginEvent {
     /**
      * Represents the event to open the Zborle screen.
      */
-    object OpenZborle : LoginEvent
+    data class OpenZborle(val token: String) : LoginEvent
 }

@@ -31,7 +31,9 @@ fun ZborleScreen(
   viewState: ZborleState,
   onLetterEntered: (String) -> Unit,
   onEnterClicked: () -> Unit,
-  onBackspaceClicked: () -> Unit
+  onBackspaceClicked: () -> Unit,
+  onStatisticsClicked: () -> Unit,
+  onStatisticsDialogDismiss: () -> Unit
 ) {
   Box(
     modifier = Modifier
@@ -39,7 +41,6 @@ fun ZborleScreen(
       .verticalScroll(rememberScrollState())
   ) {
     val showHowToPlayDialog = remember { mutableStateOf(false) }
-    val showStatisticsDialog = remember { mutableStateOf(false) }
 
     Column(
       modifier = Modifier.fillMaxSize(),
@@ -48,7 +49,7 @@ fun ZborleScreen(
       ) {
       ZborleHeader(
         onHowToIconClick = { showHowToPlayDialog.value = true },
-        onStatisticsIconClick = { showStatisticsDialog.value = true }
+        onStatisticsIconClick = onStatisticsClicked
       )
 
       ZborleInputs(viewState.wordAttempts)
@@ -63,8 +64,8 @@ fun ZborleScreen(
     if (showHowToPlayDialog.value) {
       HowToPlayDialog(viewState.wordExamples) { showHowToPlayDialog.value = false }
     }
-    if (showStatisticsDialog.value) {
-      PlayerStatisticsDialog { showStatisticsDialog.value = false }
+    if (viewState.statisticsDialogState.show) {
+      PlayerStatisticsDialog(onDismissRequest = onStatisticsDialogDismiss)
     }
   }
 

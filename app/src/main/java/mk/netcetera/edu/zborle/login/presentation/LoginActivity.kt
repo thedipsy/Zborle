@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
+import mk.netcetera.edu.zborle.data.TokenManager
 import mk.netcetera.edu.zborle.utils.collectLatest
 import mk.netcetera.edu.zborle.home.presentation.ZborleActivity
 import mk.netcetera.edu.zborle.register.presentation.RegisterActivity
@@ -42,7 +43,10 @@ class LoginActivity : AppCompatActivity() {
   private fun navigate(event: LoginEvent) =
     when (event) {
       LoginEvent.OpenRegister -> navigateToRegister()
-      LoginEvent.OpenZborle -> navigateToZborle()
+      is LoginEvent.OpenZborle -> {
+        TokenManager.storeToken(baseContext, event.token)
+        navigateToZborle()
+      }
     }
 
   private fun navigateToZborle() =

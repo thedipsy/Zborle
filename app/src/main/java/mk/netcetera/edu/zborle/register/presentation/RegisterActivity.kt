@@ -42,7 +42,7 @@ class RegisterActivity : AppCompatActivity() {
   private fun navigate(event: RegisterEvent) =
     when(event) {
       RegisterEvent.OpenLogin -> navigateToLogin()
-      RegisterEvent.OpenZborle -> navigateToZborle()
+      is RegisterEvent.OpenZborle -> navigateToZborle()
     }
 
   private fun navigateToZborle() =

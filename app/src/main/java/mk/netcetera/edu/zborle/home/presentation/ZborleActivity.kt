@@ -23,7 +23,9 @@ class ZborleActivity : AppCompatActivity() {
             viewState = viewModel.viewState.collectAsState().value,
             onLetterEntered = viewModel::onLetterEntered,
             onEnterClicked = viewModel::onEnterClicked,
-            onBackspaceClicked = viewModel::onBackspaceClicked
+            onBackspaceClicked = viewModel::onBackspaceClicked,
+            onStatisticsClicked = viewModel::onStatisticsDialogClicked,
+            onStatisticsDialogDismiss = viewModel::onDismissStatisticsDialog
           )
         }
       }

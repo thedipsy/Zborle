@@ -30,7 +30,8 @@ data class ZborleState(
   val wordExamples: WordExamples,
   val wordAttempts: WordAttempts,
   val gameStatus: GameStatus,
-  val letterInputState: List<Pair<String, LetterStatus>>
+  val letterInputState: List<Pair<String, LetterStatus>>,
+  val statisticsDialogState: StatisticsDialogState
 )
 
 /**
@@ -63,3 +64,11 @@ enum class LetterStatus {
 
   DEFAULT
 }
+
+data class StatisticsDialogState(
+  val show: Boolean,
+  val gamesPlayed: Int? = null,
+  val gamesWon: Int? = null,
+  val winPercentage: Int? = null,
+  val averageAttempts: Int? = null
+)

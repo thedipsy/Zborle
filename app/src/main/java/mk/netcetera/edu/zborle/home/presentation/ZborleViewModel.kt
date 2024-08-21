@@ -3,6 +3,10 @@ package mk.netcetera.edu.zborle.home.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import mk.netcetera.edu.zborle.home.domain.GetUserStatisticsUseCase
+import mk.netcetera.edu.zborle.network.service.ApiResponse
+import java.util.LinkedHashMap
 
 class ZborleViewModel : ViewModel() {
 
@@ -15,18 +19,23 @@ class ZborleViewModel : ViewModel() {
 
   private val wordExamples = getWordExamples()
 
+  private val getUserStatistics by lazy { GetUserStatisticsUseCase() }
+
   private val currentWord: MutableStateFlow<CurrentWordState> =
     MutableStateFlow(CurrentWordState(word = "", isComplete = false))
   private val wordAttempts: MutableStateFlow<WordAttempts> = MutableStateFlow(listOf())
   private val letterInputState: MutableStateFlow<LinkedHashMap<String, LetterStatus>> =
     MutableStateFlow(getInitialLetterInputState())
+  private val statisticsDialog = MutableStateFlow(StatisticsDialogState(show = false))
+
 
   val viewState = combine(
     currentWord,
     wordAttempts,
-    letterInputState
-  ) { currentWordState, wordAttempts, linkedHashMap ->
-    createViewState(currentWordState, wordAttempts, linkedHashMap, wordExamples)
+    letterInputState,
+    statisticsDialog
+  ) { currentWordState, wordAttempts, linkedHashMap, statisticsDialog ->
+    createViewState(currentWordState, wordAttempts, linkedHashMap, wordExamples, statisticsDialog)
   }.stateIn(
     scope = viewModelScope,
     started = SharingStarted.Eagerly,
@@ -34,7 +43,8 @@ class ZborleViewModel : ViewModel() {
       wordAttempts = List(6) { EMPTY_ROW },
       letterInputState = letterInputState.value.toList(),
       gameStatus = GameStatus.IN_PROGRESS,
-      wordExamples = wordExamples
+      wordExamples = wordExamples,
+      statisticsDialogState = statisticsDialog.value
     )
   )
 
@@ -79,6 +89,36 @@ class ZborleViewModel : ViewModel() {
 
   }
 
+  fun onStatisticsDialogClicked() {
+    viewModelScope.launch {
+
+      when(val outcome = getUserStatistics()) {
+        is ApiResponse.Loading -> { /* do nothing */ }
+        is ApiResponse.Complete -> {
+          statisticsDialog.update {
+          val statistics = outcome.value
+            it.copy(
+              show = true,
+              gamesPlayed =statistics.gamesPlayed,
+              averageAttempts =  statistics.averageAttempts,
+              gamesWon = statistics.gamesWon
+            )
+          }
+        }
+          is ApiResponse.Error -> {
+
+          }
+      }
+
+    }
+  }
+
+  fun onDismissStatisticsDialog() {
+    statisticsDialog.update {
+      it.copy(show = false)
+    }
+  }
+
   private fun updateLetterInputState(newWord: WordState) =
     newWord.correctLetters.forEach { (newLetter, newStatus) ->
       letterInputState.value.computeIfPresent(newLetter) { _, currentStatus ->
@@ -104,7 +144,8 @@ class ZborleViewModel : ViewModel() {
     currentWord: CurrentWordState,
     wordAttempts: WordAttempts,
     letterInputState: LinkedHashMap<String, LetterStatus>,
-    wordExamples: WordAttempts
+    wordExamples: WordAttempts,
+    statisticsDialogState: StatisticsDialogState
   ): ZborleState {
     val overallAttempts = wordAttempts.toMutableList()
 
@@ -124,7 +165,8 @@ class ZborleViewModel : ViewModel() {
       wordAttempts = overallAttempts,
       gameStatus = GameStatus.IN_PROGRESS,
       letterInputState = letterInputState.toList(),
-      wordExamples = wordExamples
+      wordExamples = wordExamples,
+      statisticsDialogState = statisticsDialogState
     )
   }
 }
