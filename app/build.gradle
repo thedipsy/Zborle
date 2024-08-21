@@ -48,8 +48,8 @@ android {
 }
 
 dependencies {
-//  implementation 'com.patrykandpatrick.vico:compose:2.0.0-alpha.16'
-//  implementation 'com.patrykandpatrick.vico:core:2.0.0-alpha.16'
+  implementation 'com.patrykandpatrick.vico:compose:2.0.0-alpha.16'
+  implementation 'com.patrykandpatrick.vico:core:2.0.0-alpha.16'
 
   implementation 'androidx.core:core-ktx:1.8.0'
   implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'

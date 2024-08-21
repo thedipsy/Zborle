@@ -26,8 +26,9 @@ object TokenManager {
         sharedPreferences.edit().putString("jwt_token", token).apply()
     }
 
-    fun getToken(context: Context): String? {
+    fun getToken(context: Context): String {
         val sharedPreferences = getEncryptedSharedPreferences(context)
-        return sharedPreferences.getString("jwt_token", null)
+        val token = sharedPreferences.getString("jwt_token", "").orEmpty()
+        return "Bearer $token"
     }
 }

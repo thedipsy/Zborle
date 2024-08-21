@@ -7,6 +7,7 @@ import mk.netcetera.edu.zborle.network.models.response.StatisticsResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 
@@ -19,5 +20,5 @@ interface ZborleApi {
   suspend fun login(@Body request: LoginRequest) : Response<AuthenticationResponse>
 
   @GET("game/user-statistics")
-  suspend fun getStatistics() : Response<StatisticsResponse>
+  suspend fun getStatistics(@Header("Authorization") token: String) : Response<StatisticsResponse>
 }

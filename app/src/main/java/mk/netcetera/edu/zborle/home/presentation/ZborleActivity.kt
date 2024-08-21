@@ -14,9 +14,11 @@ class ZborleActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val viewModel : ZborleViewModel by viewModels()
+    val viewModel: ZborleViewModel by viewModels {
+      ZborleViewModel.provideFactory(this, this)
+    }
 
-    setContent {
+   setContent {
       ZborleTheme {
         Surface {
           ZborleScreen(

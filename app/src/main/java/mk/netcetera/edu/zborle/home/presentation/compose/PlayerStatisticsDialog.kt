@@ -18,66 +18,52 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import mk.netcetera.edu.zborle.R
 import mk.netcetera.edu.zborle.common.presentation.compose.ZborleDialog
+import mk.netcetera.edu.zborle.home.presentation.StatisticsDialogState
 import mk.netcetera.edu.zborle.ui.theme.Black
-import mk.netcetera.edu.zborle.ui.theme.Gray
 
 @Composable
-fun PlayerStatisticsDialog(onDismissRequest: () -> Unit) =
-  ZborleDialog(
+fun PlayerStatisticsDialog(
+    statisticsDialogState: StatisticsDialogState,
+    onDismissRequest: () -> Unit
+) = ZborleDialog(
     titleId = R.string.statistics,
     onDismissRequest = onDismissRequest
-  ) {
+) {
 
     Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 12.dp, bottom = 32.dp),
-      horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp, bottom = 32.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-      PercentageInfo("78", R.string.overall_attempts_text)
-      PercentageInfo("98%", R.string.success_rate)
-      PercentageInfo("4", R.string.current_streak)
-      PercentageInfo("34", R.string.best_streak)
+        PercentageInfo(statisticsDialogState.gamesPlayed.orEmpty(), R.string.overall_attempts_text)
+        PercentageInfo(statisticsDialogState.winPercentage.orEmpty(), R.string.success_rate)
     }
-
-    Text(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 8.dp),
-      text = stringResource(R.string.guess_statistics_text),
-      fontWeight = FontWeight.Medium,
-      fontSize = 18.sp,
-      textAlign = TextAlign.Center,
-      color = Black
-    )
-//    BarChart(
-//      values = listOf(1, 2, 10, 35, 54, 28)
-//    )
-  }
+}
 
 
 @Composable
 fun RowScope.PercentageInfo(value: String, @StringRes textId: Int) {
-  Column(
-    modifier = Modifier.weight(1f),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center
-  ) {
-    Text(
-      modifier = Modifier.padding(bottom = 6.dp),
-      text = value,
-      fontWeight = FontWeight.Bold,
-      fontSize = 24.sp,
-      textAlign = TextAlign.Center,
-      color = Black
-    )
-    Text(
-      text = stringResource(textId),
-      fontSize = 12.sp,
-      textAlign = TextAlign.Center,
-      color = Black,
-      lineHeight = 14.sp
-    )
-  }
+    Column(
+        modifier = Modifier.weight(1f),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            modifier = Modifier.padding(bottom = 6.dp),
+            text = value,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            textAlign = TextAlign.Center,
+            color = Black
+        )
+        Text(
+            text = stringResource(textId),
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            color = Black,
+            lineHeight = 14.sp
+        )
+    }
 }
 

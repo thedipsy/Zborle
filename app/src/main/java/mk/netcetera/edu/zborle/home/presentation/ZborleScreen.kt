@@ -65,7 +65,7 @@ fun ZborleScreen(
       HowToPlayDialog(viewState.wordExamples) { showHowToPlayDialog.value = false }
     }
     if (viewState.statisticsDialogState.show) {
-      PlayerStatisticsDialog(onDismissRequest = onStatisticsDialogDismiss)
+      PlayerStatisticsDialog(viewState.statisticsDialogState ,onDismissRequest = onStatisticsDialogDismiss)
     }
   }
 

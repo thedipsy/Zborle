@@ -67,8 +67,8 @@ enum class LetterStatus {
 
 data class StatisticsDialogState(
   val show: Boolean,
-  val gamesPlayed: Int? = null,
-  val gamesWon: Int? = null,
-  val winPercentage: Int? = null,
-  val averageAttempts: Int? = null
+  val gamesPlayed: String? = null,
+  val gamesWon: String? = null,
+  val winPercentage: String? = null,
+  val averageAttempts: String? = null
 )
