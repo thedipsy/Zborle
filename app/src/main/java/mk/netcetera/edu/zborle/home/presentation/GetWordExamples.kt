@@ -30,7 +30,7 @@ class GetWordExamples {
           "Ш" to LetterStatus.DEFAULT,
           "А" to LetterStatus.DEFAULT,
           "П" to LetterStatus.DEFAULT,
-          "К" to LetterStatus.INCORRECT,
+          "К" to LetterStatus.NOT_CORRECT,
           "А" to LetterStatus.DEFAULT
         )
       )

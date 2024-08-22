@@ -18,43 +18,43 @@ import mk.netcetera.edu.zborle.ui.theme.ZborleTheme
  */
 class LoginActivity : AppCompatActivity() {
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    val viewModel: LoginViewModel by viewModels()
-    viewModel.navigationEvent.collectLatest(this, ::navigate)
+        val viewModel: LoginViewModel by viewModels()
+        viewModel.navigationEvent.collectLatest(this, ::navigate)
 
-    setContent {
-      ZborleTheme {
-        Surface {
-          LoginScreen(
-            viewState = viewModel.viewState.collectAsState().value,
-            onEmailTextChanged = viewModel::onEmailTextChanged,
-            onPasswordTextChanged = viewModel::onPasswordTextChanged,
-            onLoginClick = viewModel::onLoginClicked,
-            onRegisterClick = viewModel::onRegisterClicked,
-            onBack = ::finish
-          )
+        setContent {
+            ZborleTheme {
+                Surface {
+                    LoginScreen(
+                        viewState = viewModel.viewState.collectAsState().value,
+                        onEmailTextChanged = viewModel::onEmailTextChanged,
+                        onPasswordTextChanged = viewModel::onPasswordTextChanged,
+                        onLoginClick = viewModel::onLoginClicked,
+                        onRegisterClick = viewModel::onRegisterClicked,
+                        onBack = ::finish
+                    )
+                }
+            }
         }
-      }
-    }
-  }
-
-  private fun navigate(event: LoginEvent) =
-    when (event) {
-      LoginEvent.OpenRegister -> navigateToRegister()
-      is LoginEvent.OpenZborle -> {
-        TokenManager.storeToken(baseContext, event.token)
-        navigateToZborle()
-      }
     }
 
-  private fun navigateToZborle() =
-    Intent(this, ZborleActivity::class.java)
-      .apply { startActivity(this) }
-      .also { finish() }
+    private fun navigate(event: LoginEvent) =
+        when (event) {
+            LoginEvent.OpenRegister -> navigateToRegister()
+            is LoginEvent.OpenZborle -> {
+                TokenManager.storeToken(baseContext, event.token)
+                navigateToZborle()
+            }
+        }
 
-  private fun navigateToRegister() =
-    Intent(this, RegisterActivity::class.java)
-      .apply { startActivity(this) }
+    private fun navigateToZborle() =
+        Intent(this, ZborleActivity::class.java)
+            .apply { startActivity(this) }
+            .also { finish() }
+
+    private fun navigateToRegister() =
+        Intent(this, RegisterActivity::class.java)
+            .apply { startActivity(this) }
 }

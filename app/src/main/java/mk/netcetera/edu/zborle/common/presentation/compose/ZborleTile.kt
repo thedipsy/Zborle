@@ -40,9 +40,11 @@ private fun RowScope.ZborleTile(letter: String, letterStatus: LetterStatus) {
   var isAttempted by remember { mutableStateOf(letterStatus != LetterStatus.DEFAULT) }
   val rotationX = remember { Animatable(0f) }
 
-  val backgroundColor = getBackgroundColor(letterStatus)
-  val textColor = if (letterStatus == LetterStatus.DEFAULT) DarkGray else White
-  val modifier = if (letterStatus == LetterStatus.DEFAULT) {
+  var currentStatus by remember { mutableStateOf(LetterStatus.DEFAULT)  }
+  val backgroundColor = BackgroundColor(letterStatus = currentStatus)
+
+  val textColor = if (currentStatus == LetterStatus.DEFAULT) DarkGray else White
+  val modifier = if (currentStatus == LetterStatus.DEFAULT) {
     Modifier.border(1.dp, color = LightGray, shape = RoundedCornerShape(4.dp))
   } else {
     Modifier
@@ -76,9 +78,18 @@ private fun RowScope.ZborleTile(letter: String, letterStatus: LetterStatus) {
   }
 
   LaunchedEffect(isAttempted) {
+    // Animate to 90f
     rotationX.animateTo(
-      targetValue = if (isAttempted) 180f else 0f,
-      animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+      targetValue = 90f,
+      animationSpec = tween(durationMillis = 250, easing = LinearEasing)
+    )
+    // Update status when reaching 90f
+    currentStatus = letterStatus
+
+    // Animate to 180f after updating status
+    rotationX.animateTo(
+      targetValue = 180f,
+      animationSpec = tween(durationMillis = 250, easing = LinearEasing)
     )
   }
 
@@ -90,9 +101,9 @@ private fun RowScope.ZborleTile(letter: String, letterStatus: LetterStatus) {
 }
 
 @Composable
-private fun getBackgroundColor(letterStatus: LetterStatus) = when (letterStatus) {
+private fun BackgroundColor(letterStatus: LetterStatus) = when (letterStatus) {
   LetterStatus.CORRECT -> ZborleTheme.statusColors.correctBackground
   LetterStatus.PARTIALLY_CORRECT -> ZborleTheme.statusColors.partiallyCorrectBackground
-  LetterStatus.INCORRECT -> ZborleTheme.statusColors.incorrectBackground
+  LetterStatus.NOT_CORRECT -> ZborleTheme.statusColors.incorrectBackground
   LetterStatus.DEFAULT -> ZborleTheme.statusColors.defaultBackground
 }

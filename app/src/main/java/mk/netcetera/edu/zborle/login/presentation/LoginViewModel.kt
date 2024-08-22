@@ -82,14 +82,13 @@ class LoginViewModel : ViewModel() {
                     is ApiResponse.Complete -> {
                         _navigationEvent.tryEmit(LoginEvent.OpenZborle(outcome.value.accessToken))
                     }
+
                     ApiResponse.Error -> _viewState.update {
                         it.copy(
                             errorMessage = "Error",
                             isLoading = false
                         )
                     }
-
-                    ApiResponse.Loading -> {}
                 }
             }
         }

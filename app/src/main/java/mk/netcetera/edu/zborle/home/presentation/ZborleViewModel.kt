@@ -9,11 +9,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import mk.netcetera.edu.zborle.R
+import mk.netcetera.edu.zborle.home.domain.CheckWordUseCase
 import mk.netcetera.edu.zborle.home.domain.GetUserStatisticsUseCase
+import mk.netcetera.edu.zborle.home.domain.StartGameUseCase
 import mk.netcetera.edu.zborle.network.service.ApiResponse
 import java.util.LinkedHashMap
 
-class ZborleViewModel(context: Context) : ViewModel() {
+class ZborleViewModel(private val context: Context) : ViewModel() {
 
     companion object {
         private const val ATTEMPTS = 6
@@ -41,6 +44,8 @@ class ZborleViewModel(context: Context) : ViewModel() {
     private val wordExamples = getWordExamples()
 
     private val getUserStatistics by lazy { GetUserStatisticsUseCase(context) }
+    private val startGame by lazy { StartGameUseCase(context) }
+    private val checkWord by lazy { CheckWordUseCase(context) }
 
     private val currentWord: MutableStateFlow<CurrentWordState> =
         MutableStateFlow(CurrentWordState(word = "", isComplete = false))
@@ -48,7 +53,8 @@ class ZborleViewModel(context: Context) : ViewModel() {
     private val letterInputState: MutableStateFlow<LinkedHashMap<String, LetterStatus>> =
         MutableStateFlow(getInitialLetterInputState())
     private val statisticsDialog = MutableStateFlow(StatisticsDialogState(show = false))
-
+    private val error: MutableStateFlow<String?> = MutableStateFlow(null)
+    private var isGameInitialized = false
 
     val viewState = combine(
         currentWord,
@@ -63,6 +69,8 @@ class ZborleViewModel(context: Context) : ViewModel() {
             wordExamples,
             statisticsDialog
         )
+    }.combine(error) { viewState, error ->
+        viewState.copy(error = error)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
@@ -74,6 +82,22 @@ class ZborleViewModel(context: Context) : ViewModel() {
             statisticsDialogState = statisticsDialog.value
         )
     )
+
+    init {
+        if (!isGameInitialized) {
+            viewModelScope.launch {
+                when (startGame()) {
+                    is ApiResponse.Complete -> {
+                        isGameInitialized = true
+                    }
+
+                    ApiResponse.Error -> {
+                        error.value = "Failed to load the game."
+                    }
+                }
+            }
+        }
+    }
 
     fun onLetterEntered(letter: String) {
         if (currentWord.value.word.length == 5) return
@@ -101,18 +125,31 @@ class ZborleViewModel(context: Context) : ViewModel() {
         if (wordAttempts.value.size == ATTEMPTS) return
         if (!currentWord.value.isComplete) return
 
-        val wordAttemptsList = wordAttempts.value.toMutableList()
 
-        // todo get result from backend
-        val newWord = WordState(
-            currentWord.value.word,
-            currentWord.value.word.map { it.toString() to LetterStatus.values().random() }
-        )
-        wordAttemptsList.add(newWord)
+        viewModelScope.launch {
+            when (val outcome = checkWord(currentWord.value.word)) {
+                is ApiResponse.Complete -> {
+                    val wordAttemptsList = wordAttempts.value.toMutableList()
+                    val newWord = WordState(
+                        currentWord.value.word,
+                        outcome.value.userGuessResponses.map {
+                            it.letter to LetterStatus.getStatus(
+                                it.answer
+                            )
+                        }
+                    )
+                    wordAttemptsList.add(newWord)
+                    wordAttempts.value = wordAttemptsList
+                    updateLetterInputState(newWord)
+                    clearCurrentWord()
+                }
 
-        wordAttempts.value = wordAttemptsList
-        updateLetterInputState(newWord)
-        clearCurrentWord()
+                ApiResponse.Error -> {
+
+                }
+            }
+        }
+
 
     }
 
@@ -120,8 +157,6 @@ class ZborleViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
 
             when (val outcome = getUserStatistics()) {
-                is ApiResponse.Loading -> { /* do nothing */
-                }
 
                 is ApiResponse.Complete -> {
                     statisticsDialog.update {
@@ -137,7 +172,7 @@ class ZborleViewModel(context: Context) : ViewModel() {
                 }
 
                 is ApiResponse.Error -> {
-
+                    error.value = context.getString(R.string.failed_to_load_statistics)
                 }
             }
 
@@ -152,7 +187,7 @@ class ZborleViewModel(context: Context) : ViewModel() {
 
     private fun updateLetterInputState(newWord: WordState) =
         newWord.correctLetters.forEach { (newLetter, newStatus) ->
-            letterInputState.value.computeIfPresent(newLetter) { _, currentStatus ->
+            letterInputState.value.computeIfPresent(newLetter.toUpperCase()) { _, currentStatus ->
                 newStatus.takeIf { it != currentStatus } ?: currentStatus
             }
         }
@@ -169,7 +204,6 @@ class ZborleViewModel(context: Context) : ViewModel() {
         )
         return LinkedHashMap(macedonianAlphabet.associateWith { LetterStatus.DEFAULT })
     }
-
 
     private fun createViewState(
         currentWord: CurrentWordState,

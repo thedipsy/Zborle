@@ -29,4 +29,5 @@
   <string name="success_rate">Успешност</string>
   <string name="current_streak">Моментална низа</string>
   <string name="best_streak">Најдобра низа</string>
+    <string name="failed_to_load_statistics">Failed to load statistics.</string>
 </resources>

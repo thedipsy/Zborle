@@ -109,8 +109,6 @@ class RegisterViewModel : ViewModel() {
                     ApiResponse.Error -> {
                         _viewState.update { it.copy(errorMessage = "Error", isLoading = false) }
                     }
-
-                    ApiResponse.Loading -> {}
                 }
             }
         }

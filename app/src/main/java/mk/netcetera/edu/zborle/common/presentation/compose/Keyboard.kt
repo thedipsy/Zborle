@@ -103,7 +103,7 @@ private fun RowScope.LetterButton(
   val backgroundColor = when (letterStatus) {
     LetterStatus.CORRECT -> ZborleTheme.statusColors.correctBackground
     LetterStatus.PARTIALLY_CORRECT -> ZborleTheme.statusColors.partiallyCorrectBackground
-    LetterStatus.INCORRECT -> ZborleTheme.statusColors.incorrectBackground
+    LetterStatus.NOT_CORRECT -> ZborleTheme.statusColors.incorrectBackground
     LetterStatus.DEFAULT -> ZborleTheme.statusColors.defaultKeyboardBackground
   }
 
