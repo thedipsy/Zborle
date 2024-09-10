@@ -9,13 +9,17 @@ import mk.netcetera.edu.zborle.utils.backendCall
 
 class RegisterUserUseCase(private val api: ZborleApi = RetrofitService.apiService) {
 
+    companion object {
+        private const val USER_ROLE = "USER"
+    }
+
     suspend operator fun invoke(
         firstName: String,
         lastName: String,
         email: String,
         password: String
     ): ApiResponse<AuthenticationResponse> {
-        val request = RegisterRequest(firstName, lastName, email, password, "USER")
+        val request = RegisterRequest(firstName, lastName, email, password, USER_ROLE)
         return backendCall {
             api.register(request = request)
         }

@@ -9,11 +9,11 @@ import mk.netcetera.edu.zborle.utils.backendCall
 
 class LoginUseCase(private val api: ZborleApi = apiService) {
 
-  suspend operator fun invoke(
-    email: String,
-    password: String
-  ): ApiResponse<AuthenticationResponse> {
-    val request = LoginRequest(email, password)
-    return backendCall {  api.login(request = request) }
-  }
+    suspend operator fun invoke(
+        email: String,
+        password: String
+    ): ApiResponse<AuthenticationResponse> {
+        val request = LoginRequest(email, password)
+        return backendCall { api.login(request = request) }
+    }
 }

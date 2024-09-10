@@ -30,4 +30,12 @@
   <string name="current_streak">Моментална низа</string>
   <string name="best_streak">Најдобра низа</string>
     <string name="failed_to_load_statistics">Failed to load statistics.</string>
+    <string name="error_message">Се појави грешка. Пробајте повторно.</string>
+  <string name="error_not_enough_letters">Немате внесено доволно букви.</string>
+    <string name="won">You found it!</string>
+  <string name="congratulations">Честитки!</string>
+  <string name="already_guessed">Зборле е завршен за денес!</string>
+  <string name="come_back_tomorrow">Нов зборле ќе биде достапен утре.</string>
+  <string name="game_over">Game over!</string>
+  <string name="not_existing_word">Зборот не постои.</string>
 </resources>

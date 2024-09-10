@@ -1,8 +1,5 @@
 package mk.netcetera.edu.zborle.network.service
 
-import android.content.Context
-import mk.netcetera.edu.zborle.data.TokenManager
-import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

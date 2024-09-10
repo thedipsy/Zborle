@@ -10,7 +10,7 @@ import mk.netcetera.edu.zborle.common.presentation.TextField
  * @property email The current input in the email field.
  * @property password The current input in the password field.
  * @property isLoading Indicates whether the login process is in progress.
- * @property errorMessage Optional error message to be displayed in case of login failure.
+ * @property errorMessage Optional errorId message to be displayed in case of login failure.
  */
 data class RegisterViewState(
   val name: TextField,

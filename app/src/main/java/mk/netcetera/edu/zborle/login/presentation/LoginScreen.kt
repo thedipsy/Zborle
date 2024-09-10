@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import mk.netcetera.edu.zborle.R
 import mk.netcetera.edu.zborle.common.presentation.compose.*
@@ -28,52 +29,61 @@ import mk.netcetera.edu.zborle.common.presentation.compose.*
  */
 @Composable
 fun LoginScreen(
-  viewState: LoginViewState,
-  onEmailTextChanged: (String) -> Unit,
-  onPasswordTextChanged: (String) -> Unit,
-  onLoginClick: () -> Unit,
-  onRegisterClick: () -> Unit,
-  onBack: () -> Unit
+    viewState: LoginViewState,
+    onEmailTextChanged: (String) -> Unit,
+    onPasswordTextChanged: (String) -> Unit,
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit,
+    onBack: () -> Unit
 ) {
-  BackHandler { onBack() }
+    BackHandler { onBack() }
 
-  Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .verticalScroll(rememberScrollState())
-      .padding(all = 16.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center
-  ) {
-    ZborleHeader()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(all = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        ZborleHeader()
 
-    // email
-    OutlinedTextField(
-      textField = viewState.email,
-      labelId = R.string.email,
-      enabled = !viewState.isLoading,
-      onTextChanged = onEmailTextChanged,
-      leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) }
-    )
-    // password
-    OutlinedPasswordTextField(
-      passwordTextField = viewState.password,
-      labelId = R.string.password,
-      enabled = !viewState.isLoading,
-      showLeadingIcon = true,
-      onPasswordTextChanged = onPasswordTextChanged
-    )
+        // email
+        OutlinedTextField(
+            textField = viewState.email,
+            labelId = R.string.email,
+            enabled = !viewState.isLoading,
+            onTextChanged = onEmailTextChanged,
+            leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) }
+        )
+        // password
+        OutlinedPasswordTextField(
+            passwordTextField = viewState.password,
+            labelId = R.string.password,
+            enabled = !viewState.isLoading,
+            showLeadingIcon = true,
+            onPasswordTextChanged = onPasswordTextChanged
+        )
 
-    // login button
-    PrimaryButton(textId = R.string.login, isLoading = viewState.isLoading, onLoginClick)
-    // register button
-    SecondaryButton(textId = R.string.register, onClick = onRegisterClick, isEnabled = !viewState.isLoading)
-  }
-
-  val context = LocalContext.current
-  LaunchedEffect(key1 = viewState.errorMessage) {
-    if(!viewState.errorMessage.isNullOrEmpty()) {
-      Toast.makeText(context, viewState.errorMessage, Toast.LENGTH_SHORT).show()
+        // login button
+        PrimaryButton(
+            textId = R.string.login,
+            isLoading = viewState.isLoading,
+            onClick = onLoginClick
+        )
+        // register button
+        SecondaryButton(
+            textId = R.string.register,
+            onClick = onRegisterClick,
+            isEnabled = !viewState.isLoading
+        )
     }
-  }
+
+    val errorMessage = viewState.errorMessageId?.let { stringResource(id = it) }
+    val context = LocalContext.current
+    LaunchedEffect(key1 = viewState.errorMessageId) {
+        if (viewState.errorMessageId != null) {
+            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+        }
+    }
 }

@@ -5,6 +5,7 @@ import mk.netcetera.edu.zborle.network.models.request.LoginRequest
 import mk.netcetera.edu.zborle.network.models.request.RegisterRequest
 import mk.netcetera.edu.zborle.network.models.response.AuthenticationResponse
 import mk.netcetera.edu.zborle.network.models.response.CheckWordResponse
+import mk.netcetera.edu.zborle.network.models.response.StartGameResponse
 import mk.netcetera.edu.zborle.network.models.response.StatisticsResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -24,8 +25,8 @@ interface ZborleApi {
     @GET("game/user-statistics")
     suspend fun getStatistics(@Header("Authorization") token: String): Response<StatisticsResponse>
 
-    @GET("game/start-game")
-    suspend fun startGame(@Header("Authorization") token: String): Response<Unit>
+    @POST("game/start-game")
+    suspend fun startGame(@Header("Authorization") token: String): Response<StartGameResponse>
 
     @POST("game/check-word")
     suspend fun checkWord(

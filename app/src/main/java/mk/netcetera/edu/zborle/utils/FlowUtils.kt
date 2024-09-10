@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
 /**
  * Collects the latest values emitted by the [Flow] and invokes the provided [block] for each emission,
  * ensuring that collection is done only when the [LifecycleOwner] is in the [Lifecycle.State.CREATED] state.

@@ -58,8 +58,7 @@ class RegisterViewModel : ViewModel() {
                     errorMessageId = null
                 )
             )
-        }
-            .also { checkMatchingPasswords() }
+        }.also { checkMatchingPasswords() }
 
     /**
      * Invoked when the user makes changes in the confirm password.
@@ -68,18 +67,6 @@ class RegisterViewModel : ViewModel() {
         _viewState.update {
             it.copy(confirmPassword = it.confirmPassword.copy(text = text, errorMessageId = null))
         }.also { checkMatchingPasswords() }
-
-    private fun checkMatchingPasswords() {
-        val password = _viewState.value.password.text
-        val confirmPassword = _viewState.value.confirmPassword.text
-
-        val errorMessageId = R.string.password_do_not_match
-            .takeIf { password.isNotEmpty() && confirmPassword.isNotEmpty() && password != confirmPassword }
-
-        _viewState.update {
-            it.copy(confirmPassword = it.confirmPassword.copy(errorMessageId = errorMessageId))
-        }
-    }
 
     /**
      * Invoked when the user clicks on Login button.
@@ -90,6 +77,13 @@ class RegisterViewModel : ViewModel() {
     /**
      * Invoked when the user clicks on Register button.
      */
+    fun onRegisterClicked() =
+        viewModelScope.launch {
+            if (validateData()) {
+                register()
+            }
+        }
+
     private suspend fun register() {
         _viewState.update { it.copy(isLoading = true, errorMessage = null) }
         withContext(Dispatchers.IO) {
@@ -114,12 +108,17 @@ class RegisterViewModel : ViewModel() {
         }
     }
 
-    fun onRegisterClicked() =
-        viewModelScope.launch {
-            if (validateData()) {
-                register()
-            }
+    private fun checkMatchingPasswords() {
+        val password = _viewState.value.password.text
+        val confirmPassword = _viewState.value.confirmPassword.text
+
+        val errorMessageId = R.string.password_do_not_match
+            .takeIf { password.isNotEmpty() && confirmPassword.isNotEmpty() && password != confirmPassword }
+
+        _viewState.update {
+            it.copy(confirmPassword = it.confirmPassword.copy(errorMessageId = errorMessageId))
         }
+    }
 
     private fun validateData(): Boolean {
         if (_viewState.value.name.text.isEmpty()) {
@@ -162,7 +161,7 @@ sealed interface RegisterEvent {
     /**
      * Represents the event to open the Login screen.
      */
-    object OpenLogin : RegisterEvent
+    data object OpenLogin : RegisterEvent
 
     /**
      * Represents the event to open the Zborle screen.

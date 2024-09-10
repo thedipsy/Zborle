@@ -24,12 +24,12 @@ import mk.netcetera.edu.zborle.utils.parseBold
 
 @Composable
 fun HowToPlayDialog(
-  wordExamples: WordAttempts,
-  onDismissRequest: () -> Unit
+    wordExamples: WordAttempts,
+    onDismissRequest: () -> Unit
 ) = ZborleDialog(
     titleId = R.string.how_to_play,
     onDismissRequest = { onDismissRequest() },
-  ) {
+) {
     HowToPlayDescription()
     Spacer(modifier = Modifier.size(8.dp))
 
@@ -37,58 +37,57 @@ fun HowToPlayDialog(
     Spacer(modifier = Modifier.size(8.dp))
 
     DescriptionText(textId = R.string.new_zborle_daily)
-  }
+}
 
 @Composable
 private fun HowToPlayExample(wordExamples: WordAttempts) {
-  Divider()
-  Text(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(vertical = 8.dp),
-    text = stringResource(id = R.string.examples),
-    fontWeight = FontWeight.Bold,
-    fontSize = 16.sp,
-    textAlign = TextAlign.Center
-  )
+    Divider()
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        text = stringResource(id = R.string.examples),
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        textAlign = TextAlign.Center
+    )
 
-  if (wordExamples.size == 3) {
-    PositionExample(wordExamples[0], R.string.correct_position_example)
-    PositionExample(wordExamples[1], R.string.partially_correct_example)
-    PositionExample(wordExamples[2], R.string.incorrect_example)
-  }
-  Divider()
+    if (wordExamples.size == 3) {
+        PositionExample(wordExamples[0], R.string.correct_position_example)
+        PositionExample(wordExamples[1], R.string.partially_correct_example)
+        PositionExample(wordExamples[2], R.string.incorrect_example)
+    }
+    Divider()
 }
 
 @Composable
 private fun PositionExample(wordState: WordState, @StringRes textId: Int) {
-  ZborleWord(wordState)
+    ZborleWord(wordState)
 
-  Text(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(top = 4.dp, bottom = 12.dp),
-    text = stringResource(textId).parseBold(),
-    fontSize = 14.sp,
-    textAlign = TextAlign.Center,
-    color = Gray
-  )
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp, bottom = 12.dp),
+        text = stringResource(textId).parseBold(),
+        fontSize = 14.sp,
+        textAlign = TextAlign.Center,
+        color = Gray
+    )
 }
-
 
 @Composable
 private fun HowToPlayDescription() {
-  DescriptionText(textId = R.string.descriptionTitle)
-  DescriptionText(textId = R.string.descriptionOne)
-  DescriptionText(textId = R.string.descriptionTwo)
+    DescriptionText(textId = R.string.descriptionTitle)
+    DescriptionText(textId = R.string.descriptionOne)
+    DescriptionText(textId = R.string.descriptionTwo)
 }
 
 @Composable
 private fun DescriptionText(@StringRes textId: Int) = Text(
-  modifier = Modifier
-    .fillMaxWidth()
-    .padding(vertical = 4.dp),
-  text = stringResource(id = textId).parseBold(),
-  fontSize = 16.sp,
-  color = Gray
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 4.dp),
+    text = stringResource(id = textId).parseBold(),
+    fontSize = 16.sp,
+    color = Gray
 )

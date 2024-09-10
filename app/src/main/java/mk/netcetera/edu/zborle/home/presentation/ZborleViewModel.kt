@@ -1,6 +1,5 @@
 package mk.netcetera.edu.zborle.home.presentation
 
-import android.content.Context
 import android.os.Bundle
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
@@ -15,15 +14,15 @@ import mk.netcetera.edu.zborle.home.domain.GetUserStatisticsUseCase
 import mk.netcetera.edu.zborle.home.domain.StartGameUseCase
 import mk.netcetera.edu.zborle.network.service.ApiResponse
 import java.util.LinkedHashMap
+import java.util.Locale
 
-class ZborleViewModel(private val context: Context) : ViewModel() {
+class ZborleViewModel : ViewModel() {
 
     companion object {
         private const val ATTEMPTS = 6
         private val EMPTY_ROW = WordState("", List(5) { "" to LetterStatus.DEFAULT })
 
         fun provideFactory(
-            context: Context,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null,
         ): AbstractSavedStateViewModelFactory =
@@ -34,7 +33,7 @@ class ZborleViewModel(private val context: Context) : ViewModel() {
                     modelClass: Class<T>,
                     handle: SavedStateHandle
                 ): T {
-                    return ZborleViewModel(context) as T
+                    return ZborleViewModel() as T
                 }
             }
     }
@@ -43,34 +42,37 @@ class ZborleViewModel(private val context: Context) : ViewModel() {
 
     private val wordExamples = getWordExamples()
 
-    private val getUserStatistics by lazy { GetUserStatisticsUseCase(context) }
-    private val startGame by lazy { StartGameUseCase(context) }
-    private val checkWord by lazy { CheckWordUseCase(context) }
+    private val getUserStatistics by lazy { GetUserStatisticsUseCase() }
+    private val startGame by lazy { StartGameUseCase() }
+    private val checkWord by lazy { CheckWordUseCase() }
 
     private val currentWord: MutableStateFlow<CurrentWordState> =
         MutableStateFlow(CurrentWordState(word = "", isComplete = false))
     private val wordAttempts: MutableStateFlow<WordAttempts> = MutableStateFlow(listOf())
     private val letterInputState: MutableStateFlow<LinkedHashMap<String, LetterStatus>> =
         MutableStateFlow(getInitialLetterInputState())
-    private val statisticsDialog = MutableStateFlow(StatisticsDialogState(show = false))
-    private val error: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val dialog: MutableStateFlow<DialogState?> = MutableStateFlow(null)
+    private val error: MutableStateFlow<Int?> = MutableStateFlow(null)
+    private val gameStatus = MutableStateFlow(GameStatus.IN_PROGRESS)
     private var isGameInitialized = false
 
     val viewState = combine(
         currentWord,
         wordAttempts,
         letterInputState,
-        statisticsDialog
-    ) { currentWordState, wordAttempts, linkedHashMap, statisticsDialog ->
+        dialog,
+        gameStatus
+    ) { currentWordState, wordAttempts, linkedHashMap, dialog, gameStatus ->
         createViewState(
             currentWordState,
             wordAttempts,
             linkedHashMap,
             wordExamples,
-            statisticsDialog
+            dialog,
+            gameStatus
         )
     }.combine(error) { viewState, error ->
-        viewState.copy(error = error)
+        viewState.copy(errorId = error)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
@@ -79,20 +81,42 @@ class ZborleViewModel(private val context: Context) : ViewModel() {
             letterInputState = letterInputState.value.toList(),
             gameStatus = GameStatus.IN_PROGRESS,
             wordExamples = wordExamples,
-            statisticsDialogState = statisticsDialog.value
+            dialog = dialog.value
         )
     )
 
-    init {
+    fun init(token: String) {
         if (!isGameInitialized) {
             viewModelScope.launch {
-                when (startGame()) {
+                when (val outcome = startGame(token)) {
                     is ApiResponse.Complete -> {
                         isGameInitialized = true
+
+                        val wordAttemptsList = wordAttempts.value.toMutableList()
+
+                        outcome.value.guesses.forEach { currentGuess ->
+                            val newWord = WordState(
+                                currentGuess.guess,
+                                currentGuess.userGuessResponses.map {
+                                    it.letter to LetterStatus.getStatus(it.answer)
+                                }
+                            )
+                            wordAttemptsList.add(newWord)
+                            updateLetterInputState(newWord)
+                        }
+                        wordAttempts.value = wordAttemptsList
+                        if (checkIfWon()) {
+                            gameStatus.value = GameStatus.WON
+                            dialog.value = DialogState.AlreadyGuessed
+                        }
+                        if (checkIfLost()) {
+                            gameStatus.value = GameStatus.LOST
+                            dialog.value = DialogState.GameOver
+                        }
                     }
 
                     ApiResponse.Error -> {
-                        error.value = "Failed to load the game."
+                        error.value = R.string.error_message
                     }
                 }
             }
@@ -100,7 +124,7 @@ class ZborleViewModel(private val context: Context) : ViewModel() {
     }
 
     fun onLetterEntered(letter: String) {
-        if (currentWord.value.word.length == 5) return
+        if (gameStatus.value != GameStatus.IN_PROGRESS || currentWord.value.word.length == 5) return
 
         val updatedCurrentWord = currentWord.value.word.plus(letter)
         currentWord.value = currentWord.value.copy(
@@ -121,74 +145,98 @@ class ZborleViewModel(private val context: Context) : ViewModel() {
         }
     }
 
-    fun onEnterClicked() {
-        if (wordAttempts.value.size == ATTEMPTS) return
-        if (!currentWord.value.isComplete) return
-
+    fun onEnterClicked(token: String) {
+        error.value = null
+        if (gameStatus.value != GameStatus.IN_PROGRESS) return
+        if (!currentWord.value.isComplete) {
+            error.value = R.string.error_not_enough_letters
+            return
+        }
 
         viewModelScope.launch {
-            when (val outcome = checkWord(currentWord.value.word)) {
+            when (val outcome = checkWord(guess = currentWord.value.word, token = token)) {
                 is ApiResponse.Complete -> {
                     val wordAttemptsList = wordAttempts.value.toMutableList()
+                    if (outcome.value.userGuessResponse.isNullOrEmpty()) {
+                        if (outcome.value.message == "Your guessed word does not exist")
+                            error.value = R.string.not_existing_word
+                        return@launch
+                    }
+
                     val newWord = WordState(
                         currentWord.value.word,
-                        outcome.value.userGuessResponses.map {
-                            it.letter to LetterStatus.getStatus(
-                                it.answer
-                            )
+                        outcome.value.userGuessResponse.map {
+                            it.letter to LetterStatus.getStatus(it.answer)
                         }
                     )
                     wordAttemptsList.add(newWord)
                     wordAttempts.value = wordAttemptsList
                     updateLetterInputState(newWord)
                     clearCurrentWord()
-                }
-
-                ApiResponse.Error -> {
-
-                }
-            }
-        }
-
-
-    }
-
-    fun onStatisticsDialogClicked() {
-        viewModelScope.launch {
-
-            when (val outcome = getUserStatistics()) {
-
-                is ApiResponse.Complete -> {
-                    statisticsDialog.update {
-                        val statistics = outcome.value
-                        it.copy(
-                            show = true,
-                            gamesPlayed = "${statistics.gamesPlayed}",
-                            averageAttempts = "${statistics.averageAttempts}",
-                            gamesWon = "${statistics.gamesWon}",
-                            winPercentage = "${statistics.winPercentage}%"
-                        )
+                    if (checkIfWon()) {
+                        gameStatus.value = GameStatus.WON
+                        dialog.value = DialogState.Congratulations
+                    }
+                    if (checkIfLost()) {
+                        gameStatus.value = GameStatus.LOST
+                        dialog.value = DialogState.GameOver
                     }
                 }
 
+                ApiResponse.Error -> {
+                    error.value = R.string.error_message
+                }
+            }
+        }
+    }
+
+    private fun checkIfLost() =
+        wordAttempts.value.size == ATTEMPTS &&
+                wordAttempts.value.last().correctLetters.all {
+                    it.second != LetterStatus.CORRECT
+                }
+
+    private fun checkIfWon() = wordAttempts.value.lastOrNull()?.correctLetters?.all {
+        it.second == LetterStatus.CORRECT
+    } ?: false
+
+    fun onStatisticsDialogClicked(token: String) {
+        viewModelScope.launch {
+
+            when (val outcome = getUserStatistics(token = token)) {
+
+                is ApiResponse.Complete -> {
+                    val statistics = outcome.value
+                    dialog.value = DialogState.StatisticsDialogState(
+                        gamesPlayed = "${statistics.gamesPlayed}",
+                        averageAttempts = "${statistics.averageAttempts}",
+                        gamesWon = "${statistics.gamesWon}",
+                        winPercentage = "${statistics.winPercentage}%"
+                    )
+                }
+
                 is ApiResponse.Error -> {
-                    error.value = context.getString(R.string.failed_to_load_statistics)
+                    error.value = R.string.failed_to_load_statistics
                 }
             }
 
         }
     }
 
-    fun onDismissStatisticsDialog() {
-        statisticsDialog.update {
-            it.copy(show = false)
-        }
+    fun onDismissDialog() {
+        dialog.value = null
     }
 
     private fun updateLetterInputState(newWord: WordState) =
         newWord.correctLetters.forEach { (newLetter, newStatus) ->
-            letterInputState.value.computeIfPresent(newLetter.toUpperCase()) { _, currentStatus ->
-                newStatus.takeIf { it != currentStatus } ?: currentStatus
+            letterInputState.value.computeIfPresent(newLetter.uppercase(Locale.ROOT)) { _, currentStatus ->
+                newStatus.takeIf {
+                    it != currentStatus &&
+                            (currentStatus == LetterStatus.DEFAULT && it == LetterStatus.NOT_CORRECT) ||
+                            (currentStatus == LetterStatus.DEFAULT && it == LetterStatus.PARTIALLY_CORRECT) ||
+                            (currentStatus == LetterStatus.DEFAULT && it == LetterStatus.CORRECT) ||
+                            (currentStatus == LetterStatus.PARTIALLY_CORRECT && it == LetterStatus.CORRECT)
+                } ?: currentStatus
             }
         }
 
@@ -210,15 +258,18 @@ class ZborleViewModel(private val context: Context) : ViewModel() {
         wordAttempts: WordAttempts,
         letterInputState: LinkedHashMap<String, LetterStatus>,
         wordExamples: WordAttempts,
-        statisticsDialogState: StatisticsDialogState
+        dialogState: DialogState?,
+        gameStatus: GameStatus
     ): ZborleState {
         val overallAttempts = wordAttempts.toMutableList()
 
-        val newWord = WordState(
-            currentWord.word,
-            currentWord.word.map { it.toString() to LetterStatus.DEFAULT }
-        )
-        overallAttempts.add(newWord)
+        if (currentWord.word.isNotEmpty()) {
+            val newWord = WordState(
+                currentWord.word,
+                currentWord.word.map { it.toString() to LetterStatus.DEFAULT }
+            )
+            overallAttempts.add(newWord)
+        }
 
         val emptyRow = WordState("", List(5) { "" to LetterStatus.DEFAULT })
 
@@ -228,10 +279,10 @@ class ZborleViewModel(private val context: Context) : ViewModel() {
 
         return ZborleState(
             wordAttempts = overallAttempts,
-            gameStatus = GameStatus.IN_PROGRESS,
+            gameStatus = gameStatus,
             letterInputState = letterInputState.toList(),
             wordExamples = wordExamples,
-            statisticsDialogState = statisticsDialogState
+            dialog = dialogState
         )
     }
 }

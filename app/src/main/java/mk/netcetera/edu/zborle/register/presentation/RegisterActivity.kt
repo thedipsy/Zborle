@@ -10,7 +10,6 @@ import androidx.compose.runtime.collectAsState
 import mk.netcetera.edu.zborle.data.TokenManager
 import mk.netcetera.edu.zborle.home.presentation.ZborleActivity
 import mk.netcetera.edu.zborle.login.presentation.LoginActivity
-import mk.netcetera.edu.zborle.login.presentation.LoginEvent
 import mk.netcetera.edu.zborle.ui.theme.ZborleTheme
 import mk.netcetera.edu.zborle.utils.collectLatest
 
